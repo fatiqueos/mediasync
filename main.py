@@ -1,7 +1,6 @@
+import os
 import subprocess
 import sys
-import os
-import requests
 import time
 
 # requests kütüphanesini yükle
@@ -14,6 +13,7 @@ try:
 except ImportError:
     print("Requests kütüphanesi bulunamadı. Yükleniyor...")
     install('requests')
+    import requests  # Yükleme sonrası tekrar import et
 
 # Gerekli değişkenler
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
